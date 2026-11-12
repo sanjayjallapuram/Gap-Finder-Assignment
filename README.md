@@ -1,188 +1,205 @@
-GapFinder AI
-An AI-powered study assistant that uses Retrieval-Augmented Generation
-(RAG) to analyse a student's study materials, generate source-grounded
-questions, identify learning gaps, and create a personalised revision
-plan.
-Features
-- PDF ingestion: Load PDF study materials and extract page-level
-  text.
-- Document classification: Classify files as syllabus material,
-  past papers, or general study material using filename-based rules.
-- Text chunking: Split extracted text into overlapping chunks for
-  retrieval.
-- Vector search: Generate embeddings with Hugging Face Sentence
-  Transformers and store document chunks in ChromaDB.
-- Topic mapping: Use the Groq API to identify topics, subtopics,
-  and estimated exam importance from the available materials.
-- RAG-based question generation: Generate multiple-choice
-  questions using retrieved document context, with source filename and
-  page references.
-- Diagnostic assessment: Evaluate answers and calculate
-  topic-level scores.
-- Learning-gap analysis: Classify topics as weak, medium, or
-  strong and prioritise revision.
-- Revision planning: Allocate available study time across topics
-  according to their calculated priority.
-- Learning progress: Store quiz-attempt scores in SQLite.
-The generated answers and questions are intended to be grounded in the
-indexed study materials. Their accuracy still depends on the quality
-of the source documents, retrieval, and model output.
+# GapFinder AI – AI-Powered Student Knowledge Gap Detection System
 
-How it works
-1. Add or upload PDF study materials.
-2. Extract text from each PDF and split it into chunks.
-3. Create embeddings and index the chunks in ChromaDB.
-4. Build a topic map from the indexed materials.
-5. Retrieve relevant chunks when a topic needs to be explained or
-   assessed.
-6. Send the retrieved context to the Groq model to generate questions
-   or explanations.
-7. Record quiz results, analyse learning gaps, and produce a revision
-   plan.
-Technology stack
-- Language: Python
-- UI: Streamlit (for the web application interface)
-- LLM API: Groq
-- Orchestration and document processing: LangChain integrations
-- PDF loader: PyPDFLoader
-- Text splitting: RecursiveCharacterTextSplitter
-- Embeddings: Hugging Face Sentence Transformers
-  (sentence-transformers/all-MiniLM-L6-v2 by default)
-- Vector database: ChromaDB
-- Local progress database: SQLite
-- Configuration: python-dotenv
-Project structure
-The project is organised by responsibility. Adjust the names below to
-match the files in your repository.
+## Project Overview
+
+GapFinder AI is an AI-powered educational assistant designed to identify students' knowledge gaps, evaluate their understanding, and generate personalized study plans.
+
+It uses **Retrieval-Augmented Generation (RAG)** to analyse uploaded study materials, extract important topics, generate context-based multiple-choice questions, and evaluate student performance.
+
+The system helps students understand which topics they need to improve and prioritizes their preparation based on performance and exam importance.
+
+## Key Features
+
+- **PDF Document Ingestion:** Upload and process study materials, syllabi, and previous question papers.
+- **Document Classification:** Identify syllabus documents, past examination papers, and study materials.
+- **Text Chunking:** Split documents into smaller overlapping chunks for effective retrieval.
+- **Vector Database:** Store document embeddings using ChromaDB.
+- **Topic Extraction:** Automatically identify important topics and subtopics using an LLM.
+- **AI Question Generation:** Generate multiple-choice questions based on retrieved study materials.
+- **Diagnostic Quiz:** Evaluate student knowledge through topic-based assessments.
+- **Knowledge Gap Analysis:** Identify weak, medium, and strong topics based on quiz performance.
+- **Exam Priority Analysis:** Prioritize topics using performance scores and estimated exam importance.
+- **Personalized Revision Planner:** Generate study schedules based on available days, study hours, and topic priorities.
+- **RAG-Based Topic Explanation:** Provide explanations grounded in uploaded study materials.
+- **Learning Progress Tracking:** Store and monitor quiz performance using SQLite.
+
+## 🛠️ Technology Stack
+
+| Category | Technologies |
+|---|---|
+| Programming Language | Python |
+| Frontend | Streamlit |
+| LLM | Groq API |
+| LLM Integration | Groq Python SDK |
+| RAG Framework | LangChain |
+| PDF Processing | PyPDFLoader |
+| Text Splitting | RecursiveCharacterTextSplitter |
+| Embeddings | Hugging Face Sentence Transformers |
+| Vector Database | ChromaDB |
+| Database | SQLite |
+| Data Processing | JSON |
+| Environment Management | Python-dotenv |
+| Deployment | Streamlit Community Cloud |
+
+## 🧠 System Architecture
+
+The application follows a Retrieval-Augmented Generation architecture.
+
+1. **Document Upload:** Students upload PDFs containing study materials, syllabi, and previous examination papers.
+2. **Document Processing:** PyPDFLoader extracts text from PDF documents.
+3. **Text Chunking:** RecursiveCharacterTextSplitter divides extracted text into overlapping chunks.
+4. **Embedding Generation:** Hugging Face embedding models convert text chunks into vector representations.
+5. **Vector Storage:** ChromaDB stores embeddings and associated document metadata.
+6. **Topic Mapping:** Groq LLM analyses study materials and extracts important topics and subtopics.
+7. **Context Retrieval:** The retriever uses Maximal Marginal Relevance (MMR) to retrieve relevant document chunks.
+8. **Question Generation:** Groq generates multiple-choice questions using retrieved context.
+9. **Performance Evaluation:** Student responses are evaluated to calculate topic-level scores.
+10. **Gap Analysis:** The system identifies knowledge gaps and calculates topic priorities.
+11. **Revision Planning:** A personalized study schedule is generated based on learning gaps and available study time.
+
+## 📂 Project Structure
+
+```text
 GapFinder-AI/
+│
 ├── app.py
-├── ingestion_pipeline.py
-├── config/
-│   └── settings.py
+├── gapfinder.py        # just for reviewing the whole code at once(all the functions at one place)
+│
 ├── services/
 │   ├── llm_service.py
 │   ├── document_service.py
-│   ├── vector_store.py
+│   ├── question_service.py
 │   ├── rag_service.py
 │   ├── topic_service.py
-│   └── question_service.py
+│   ├── vector_store.py
+│   └── ingestion_pipeline.py
+
+│
 ├── modules/
 │   ├── quiz.py
 │   ├── gap_analysis.py
-│   ├── revision_planner.py
-│   └── progress.py
+│   ├── progress.py
+│   └── revision_planner.py
+│
 ├── database/
 │   └── db_manager.py
-├── data/
-│   ├── uploads/
-│   ├── chroma_db/
-│   ├── topics.json
-│   └── latest_report.json
-├── requirements.txt
-├── .env.example
-└── .gitignore
-Some folders and files may be created automatically when the application
-runs. Keep generated data and source code separate.
-Prerequisites
-- Python 3.10 or a compatible version supported by your installed
-  dependencies.
-- A Groq API key.
-- Git, if you plan to clone or push the project through GitHub.
-Local setup
-1. Clone the repository
+│
+└── data/
+    ├── uploads/
+    ├── chroma_db/
+    ├── topics.json
+    └── latest_report.json
+```
+
+## ⚙️ Installation and Setup
+
+### 1. Clone the Repository
+
+```bash
 git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+```
+
+```bash
 cd YOUR_REPOSITORY
-Or open the project directory you already have.
-2. Create and activate a virtual environment
-Windows PowerShell:
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-macOS / Linux:
-python3 -m venv .venv
-source .venv/bin/activate
-3. Install dependencies
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+Activate the environment:
+
+**Windows:**
+
+```bash
+venv\Scripts\activate
+```
+
+**Linux / macOS:**
+
+```bash
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-If you have not created requirements.txt yet, the following are the
-main packages imported by the original implementation. Check your
-current code and pin compatible versions before deployment:
-pip install streamlit python-dotenv groq langchain-community langchain-text-splitters langchain-chroma langchain-huggingface sentence-transformers pypdf
-4. Configure environment variables
-Create a .env file in the project root:
+```
+
+### 4. Configure Environment Variables
+
+Create a `.env` file in the project root directory.
+
+```env
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=openai/gpt-oss-120b
 EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-Use a valid model identifier available to your Groq account. Do not
-commit .env or expose API keys in source code.
+```
 
-An optional .env.example can contain the variable names with
-placeholder values, but never a real key.
-5. Add study materials
-Place PDF files in the configured upload directory (the original
-implementation uses data/uploads/) or upload them through the
-application's interface.
+Replace the placeholder with your actual Groq API key.
 
-For best results, use text-based PDFs. Scanned PDFs may require OCR,
-which is not implemented in the original PDF-loading flow.
-6. Run the application
-For a Streamlit application:
+### 5. Run the Application
+
+```bash
 streamlit run app.py
-If you are running the original command-line version instead of the
-Streamlit interface, run the module that contains its command-line entry
-point.
-Deploying to Streamlit Community Cloud
+```
+
+The application will be available at:
+
+```text
+http://localhost:8501
+```
+
+## 🔑 Environment Variables
+
+| Variable | Description |
+|---|---|
+| GROQ_API_KEY | API key for accessing Groq LLM services |
+| GROQ_MODEL | Groq model used for text generation |
+| EMBEDDING_MODEL | Hugging Face embedding model used for vector generation |
+
+## ☁️ Deployment
+
+The application can be deployed using **Streamlit Community Cloud**.
+
 1. Push the project to a GitHub repository.
-2. Open Streamlit Community Cloud.
-3. Create an app and select the repository, branch, and app.py as the
-   main file.
-4. Open the app's settings and add the required secrets in TOML format:
+2. Visit https://share.streamlit.io/
+3. Connect your GitHub account.
+4. Select the project repository.
+5. Select the `main` branch.
+6. Set `app.py` as the main application file.
+7. Configure the required API keys under Streamlit Cloud Secrets.
+8. Deploy the application.
+
+Example Streamlit Secrets configuration:
+
+```toml
 GROQ_API_KEY = "your_groq_api_key"
 GROQ_MODEL = "openai/gpt-oss-120b"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-5. Save the secrets and deploy the application.
-The application must read the key from st.secrets in Streamlit Cloud
-and may read from .env during local development.
-Deployment and persistence notes
-- Never push .env, API keys, tokens, or secrets.toml to GitHub.
-- Add .env, .venv/, __pycache__/, and generated local data to
-  .gitignore as appropriate.
-- Streamlit Community Cloud's local filesystem should not be treated
-  as durable storage. Uploaded PDFs, ChromaDB files, SQLite databases,
-  and generated JSON files may not survive app restarts or
-  redeployments.
-- For a production deployment where user data must persist, use
-  durable external storage and a persistent database/vector database.
-  Consider user isolation and access controls if multiple students use
-  the application.
-- The Hugging Face embedding model may need to download during
-  startup, which can increase initial load time.
-Security
-- Store secrets in environment variables locally and Streamlit Secrets
-  in the cloud.
-- Rotate any API key that has accidentally been committed or exposed.
-- Do not commit student data or private study documents unless you
-  have permission to share them.
-- Validate uploaded file types and sizes before processing.
-Current limitations and considerations
-- Document classification in the original implementation is based on
-  filename keywords.
-- The original implementation expects text to be extractable from
-  PDFs; image-only scans need OCR support.
-- Generated questions depend on retrieved context and LLM output, so
-  they should be reviewed before high-stakes use.
-- SQLite and local ChromaDB are suitable for a local prototype, but
-  multi-user production deployment requires a persistent storage
-  strategy.
-- The original code's terminal-based input() and print()
-  interactions need to be replaced with Streamlit widgets for a fully
-  interactive Streamlit experience.
-Future improvements
-- Add OCR for scanned PDFs.
-- Add user authentication and per-user document isolation.
-- Add durable cloud storage for uploaded files and vector indexes.
-- Add automated tests for ingestion, retrieval, question generation,
-  scoring, and revision planning.
-- Add support for exporting diagnostic reports and revision schedules.
-- Add document-level filtering and stronger citation validation.
-License
-Add a license file if you intend to distribute or open-source this
-project. Until then, no license is specified.
+```
+
+## 📊 Knowledge Gap Analysis
+
+The system classifies student performance into three categories:
+
+| Performance Score | Classification |
+|---|---|
+| Below 50% | Weak |
+| 50% – 74.99% | Medium |
+| 75% and above | Strong |
+
+Topic priority is calculated using:
+
+```text
+Priority = 0.7 × (100 - Score)
+         + 0.3 × (Exam Weight × 20)
+```
+
+Topics with higher priority receive more revision time.
+
+
+live link: https://sanjayjallapuram-gapfinder-app-x0e7gf.streamlit.app/
