@@ -96,7 +96,7 @@ GapFinder-AI/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
+git clone https://github.com/sanjayjallapuram/Gap-Finder-Assignment
 ```
 
 ```bash
